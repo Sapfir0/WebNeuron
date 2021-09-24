@@ -1,5 +1,6 @@
 import brain from "brain.js";
 import fs from "fs";
+import { BRAIN_DATA_PATH, config } from "./config";
 import {
   getTestImages,
   getTestLabels,
@@ -39,14 +40,8 @@ export async function trainBrain() {
   }
 
   const trainingOptions: brain.INeuralNetworkTrainingOptions = {
-    iterations: 20,
+    iterations: 10,
     log: (details) => console.log(details),
-  };
-
-  const config = {
-    binaryThresh: 0.5,
-    hiddenLayers: [3], // array of ints for the sizes of the hidden layers in the network
-    leakyReluAlpha: 0.01, // supported for activation type 'leaky-relu'
   };
 
   const net = new brain.NeuralNetworkGPU(config);
@@ -58,8 +53,10 @@ export async function trainBrain() {
   console.log("Export net to json");
   const model = net.toJSON();
 
-  fs.writeFile("./data/model.json", JSON.stringify(model), "utf8", () =>
-    console.log("model has been written")
+  fs.writeFile(
+    `${BRAIN_DATA_PATH}/${Date.now()}.json`,
+    JSON.stringify(model),
+    "utf8",
+    () => console.log("model has been written")
   );
 }
-

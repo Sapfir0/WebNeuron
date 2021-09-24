@@ -1,10 +1,12 @@
 import cookieParser from "cookie-parser";
 import express, { NextFunction, Request, Response } from "express";
 import "express-async-errors";
+import fileUpload from "express-fileupload";
 import helmet from "helmet";
 import StatusCodes from "http-status-codes";
 import morgan from "morgan";
 import path from "path";
+import { predict } from "./brain/predict";
 import { getAccuracy } from "./brain/score";
 import { trainBrain } from "./brain/train";
 
@@ -29,16 +31,14 @@ if (process.env.NODE_ENV === "production") {
   app.use(helmet());
 }
 
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
+
 // // Add APIs
 // app.use('/api', BaseRouter);
-
-// Print API errors
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  return res.status(BAD_REQUEST).json({
-    error: err.message,
-  });
-});
 
 app.post("/trainBrain", (req, res) => {
   trainBrain();
@@ -47,6 +47,12 @@ app.post("/trainBrain", (req, res) => {
 app.get("/getBrainParam", async (req, res) => {
   const acc = await getAccuracy();
   res.send(acc);
+});
+
+app.post("/predict", (req, res) => {
+  if (req.files?.image && !Array.isArray(req.files.image)) {
+    res.send(predict(req.files.image.data));
+  }
 });
 
 const staticDir = path.join(__dirname, "public");
