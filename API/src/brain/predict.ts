@@ -1,6 +1,7 @@
 import brain from "brain.js";
 import fs from "fs";
-import path from 'path'
+import { cpuUsage } from "os-utils";
+import path from "path";
 import { BRAIN_DATA_PATH, config } from "./config";
 
 const getLastModel = () => {
@@ -11,8 +12,20 @@ const getLastModel = () => {
 
 export function predict(data: any) {
   const net = new brain.NeuralNetworkGPU(config);
+  const modelName = getLastModel();
+  console.log("Model used:", modelName);
 
-  const networkState = JSON.parse(fs.readFileSync(getLastModel(), "utf-8"));
+  const networkState = JSON.parse(fs.readFileSync(modelName, "utf-8"));
   net.fromJSON(networkState);
-  return net.run(data);
+  console.time("brain predict");
+
+  cpuUsage((usage: number) => {
+    console.log(`CPU usage: ${usage.toFixed(3)}%`);
+  });
+
+  const predicted = net.run(data);
+
+  console.timeEnd("brain predict");
+
+  return predicted;
 }
