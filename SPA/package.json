@@ -10,7 +10,8 @@
   "dependencies": {
     "api_interaction_services": "^0.2.12",
     "axios": "^0.21.1",
-    "brain.js": "^2.0.0-beta.2",
+    "brain.js": "2.0.0-beta.2",
+    "Buffer": "^0.0.0",
     "convnetjs": "^0.3.0",
     "css-loader": "^6.3.0",
     "fp-ts": "^2.10.5",

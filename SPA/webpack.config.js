@@ -29,6 +29,9 @@ module.exports = (env) => {
         devtool,
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
+            fallback: {
+                fs: false
+              }
         },
         module: {
             rules: [

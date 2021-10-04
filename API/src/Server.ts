@@ -1,12 +1,13 @@
 import cookieParser from "cookie-parser";
-import express, { NextFunction, Request, Response } from "express";
+import cors from "cors";
+import express from "express";
 import "express-async-errors";
 import fileUpload from "express-fileupload";
 import helmet from "helmet";
 import StatusCodes from "http-status-codes";
 import morgan from "morgan";
 import path from "path";
-import { predict } from "./brain/predict";
+import { getLastModel, predict } from "./brain/predict";
 import { getAccuracy } from "./brain/score";
 import { trainBrain } from "./brain/train";
 
@@ -37,11 +38,18 @@ app.use(
   })
 );
 
-// // Add APIs
-// app.use('/api', BaseRouter);
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.post("/trainBrain", (req, res) => {
   trainBrain();
+});
+
+app.get("/trained", (req, res) => {
+  res.sendFile(getLastModel());
 });
 
 app.get("/getBrainParam", async (req, res) => {
@@ -51,6 +59,7 @@ app.get("/getBrainParam", async (req, res) => {
 
 app.post("/predict", (req, res) => {
   if (req.files?.image && !Array.isArray(req.files.image)) {
+    console.log(req.files.image.data);
     res.send(predict(req.files.image.data));
   }
 });

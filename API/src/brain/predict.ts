@@ -4,7 +4,7 @@ import { cpuUsage } from "os-utils";
 import path from "path";
 import { BRAIN_DATA_PATH, config } from "./config";
 
-const getLastModel = () => {
+export const getLastModel = () => {
   const files = fs.readdirSync(BRAIN_DATA_PATH);
   files.sort();
   return path.join(BRAIN_DATA_PATH, files[files.length - 1]);
